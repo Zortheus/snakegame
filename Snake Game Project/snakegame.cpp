@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <fstream>
 #include <string.h>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -114,24 +116,26 @@ void Input()
 
 void Logic()
 {
-
-    int prevX = TailX[0];
-    int prevY = TailY[0];
+    // create prevX and prevY, and 2X and 2Y, set current TailX and TailY to head position
+    int prevX = TailX[0]; 
+    int prevY = TailY[0]; 
     int prev2X, prev2Y;
-    TailX[0] = x;
+    TailX[0] = x; // the first tail piece will be placed on the start position once it's printed
     TailY[0] = y;
 
-    for (int i = 1; i < nTail; i++)
+    for (int i = 1; i < nTail; i++) // interate for every tail piece nTail, starting with pos 1
     {
-        prev2X = TailX[i];
-        prev2Y = TailY[i];
-        TailX[i] = prevX;
-        TailY[i] = prevY;
-        prevX = prev2X;
-        prevY = prev2Y;
-    }
+        prev2X = TailX[i]; // prev2X becomes equal to TailX[1]
+        prev2Y = TailY[i]; // prev2Y becomes euqla to TailY[1]
 
-    switch(dir)
+        TailX[i] = prevX; // TailX[1] position is assigned to prevX
+        TailY[i] = prevY; // TailY[1] position is assigned to prevY
+
+        prevX = prev2X; // increases prevX to the next [i]
+        prevY = prev2Y; // increases prevX to the next [i]
+    } // 
+
+    switch(dir) // logic for controls; note that up is negative and down is positive since it reads from top left to bottom right.
     {
         case LEFT:
             x--;
@@ -172,7 +176,7 @@ void registration()
 {
         string ruserName;
         system("clear");
-        cout << "Your score was " << score;
+        cout << "Your score was " << score << endl;
         cout << "\t Enter the username : ";
         cin >> ruserName;
 
@@ -186,16 +190,24 @@ int main()
 {
     
     int d;
-    cout << "---------------------------------------------------" << endl;
-    cout << "#####                                         #####" << endl;
-    cout << "#####          WELCOME TO SNAKE GAME          #####" << endl;
-    cout << "#####                                         #####" << endl;
-    cout << "#####                                         #####" << endl;
-    cout << "#####           Enter 1 to PLAY               #####" << endl;
-    cout << "#####           Enter 2 to SEE SCORES         #####" << endl;
-    cout << "#####           Enter 3 to EXIT               #####" << endl;
-    cout << "#####                                         #####" << endl;
-    cout << "---------------------------------------------------" << endl;
+    cout << R"(
+  _________ _______      _____   ____  __.___________
+ /   _____/ \      \    /  _  \ |    |/ _|\_   _____/
+ \_____  \  /   |   \  /  /_\  \|      <   |    __)_ 
+ /        \/    |    \/    |    \    |  \  |        \
+/_______  /\____|__  /\____|__  /____|__ \/_______  /
+        \/         \/         \/        \/        \/ 
+-----------------------------------------------------
+#####                                           #####
+#####           WELCOME TO SNAKE GAME           #####
+#####                                           #####
+#####                                           #####
+#####            ENTER 1 to PLAY                #####
+#####            ENTER 2 to SEE SCORES          #####
+#####            ENTER 3 to EXIT                #####
+#####                                           #####
+-----------------------------------------------------
+)";
 
     cout << "\t   Please enter your choice: ";
     cin >> d;
@@ -232,6 +244,22 @@ int main()
         clear();
     } else if (d == 1)
     {
+        system("clear");
+        cout << R"(
+  ________    _____      _____  ___________
+ /  _____/   /  _  \    /     \ \_   _____/
+/   \  ___  /  /_\  \  /  \ /  \ |    __)_
+\    \_\  \/    |    \/    Y    \|        \
+ \______  /\____|__  /\____|__  /_______  /
+        \/         \/         \/        \/
+____________   _________________________
+\_____  \   \ /   /\_   _____/\______   \
+ /   |   \   Y   /  |    __)_  |       _/
+/    |    \     /   |        \ |    |   \
+\_______  /\___/   /_______  / |____|_  /
+        \/                 \/         \/
+
+        )";
         registration();
         main();
         clear();
@@ -245,13 +273,56 @@ int main()
 void ScoreScreen()
 {
     system("clear");
+
+    string line; // this variable is our line
     ifstream f("highscore.txt");
 
-    if (f.is_open()) 
-        cout << f.rdbuf() << endl;
+    if (f.is_open()) { // read the file
+        vector<pair<int, string> > score_vector; //create a vector pair called score_vector - int for score and string for name
+        string name; // variable for name
+        int score; // variable for score
+
+        while (f >> name >> score) { // while loop using our file f - >> "name" >> "score" means our vector will read the first column's data as name and second as score
+            score_vector.push_back(make_pair(score, name)); // this fills score_vector with 
+            cout << line << '\n';
+        }
+
+        f.close(); // closes the file 
+
+        system("clear");
+        clear();
+
+        cout << R"(
+  __________________  ________ _____________________ _________
+ /   _____/\_   ___ \ \_____  \\______   \_   _____//   _____/
+ \_____  \ /    \  \/  /   |   \|       _/|    __|_ \_____  \
+ /        \\     \____/    |    \    |   \|        \/        \
+/_______  / \______  /\_______  /____|_  /_______  /_______  /
+        \/         \/         \/       \/        \/        \/
+        )";            
+        cout << endl;                                                       
+
+        cout << "#" << "    " << "Name" << "\t" << "Score" << endl;
+        cout << "----------------------" << endl;
+
+        sort(score_vector.begin(), score_vector.end()); // sort the vector from beginning to end (descending)
+        reverse(score_vector.begin(), score_vector.end()); // reverse the order of the sort (ascending)
+
+        int place = 1;
+        int topTen = 0;
+        for(auto it = score_vector.begin(); topTen < 10; ++it){ // starting at the first score, keep going as long as you're not at the end, +1 to it
+            cout << place << "    " << it->second << "\t" << it->first << endl; // Print 
+            place++;
+            topTen++;
+        }
+    }
+    else
+        cout << "Unable to open text";
   
     int e = 0;
-    cout << "\n Enter 1 to go back to the menu or 2 to exit : "; 
+    cout << "\n ENTER 1 to go back to the menu.\n";
+    cout << "\n ENTER 2 to exit Snake." << endl;
+    cout << " ";
     cin >> e;
 
     switch (e)
