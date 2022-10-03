@@ -9,8 +9,8 @@ Update 10/2/22
 3. Added View High Score Menu
 
 Update 10/3/22
-4. Added ASCII Graphics
-5. Sorted High Score Menu and added #
+1. Added ASCII Graphics
+2. Sorted High Score Menu and added #
 
 
 Note: When compiling, make sure to link the ncurses libray by adding -lncurses
