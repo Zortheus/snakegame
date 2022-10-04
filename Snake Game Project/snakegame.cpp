@@ -1,3 +1,8 @@
+// SNAKE GAME
+// by AJP
+//
+// v 1.2.0
+
 #include <iostream>
 #include <cstdlib>
 #include <ncurses.h>
@@ -8,9 +13,8 @@
 #include <algorithm>
 
 using namespace std;
+#define RESET   "\033[0m"
 
-void ScoreScreen();
-int d, e;
 
 // Creating some universal constants and a boolean for whether the game is over
 bool gameOver;
@@ -27,6 +31,17 @@ int nTail = 0;
 void Setup()
 {
     initscr();   // these functions set the ncurses library settings
+
+    //color settings
+    if(has_colors() == FALSE) {
+        endwin();
+        printf("Your terminal does not support color\n");
+        exit(1);
+    }
+    start_color();
+        init_pair(1, COLOR_GREEN, COLOR_BLACK);
+        init_pair(2, COLOR_RED, COLOR_BLACK);
+
     clear();
     noecho();
     cbreak();
@@ -58,15 +73,25 @@ void Draw()
                 mvprintw(i,j,"#");
             else if (j == 0 || j == 21) // printing the walls?
                 mvprintw(i,j,"#");
-            else if (i == y && j == x) // printing the head
+            else if (i == y && j == x){ // printing the head
+                attron(COLOR_PAIR(1));
                 mvprintw(i,j,"O");
+                attroff(COLOR_PAIR(1));
+            }
             else if (i == fruitY && j == fruitX) // printing the fruit
+            {    
+                attron(COLOR_PAIR(2));
                 mvprintw(i,j,"@");
+                attroff(COLOR_PAIR(2));
+            }    
             else                                     // printing the tail section
                 for (int k = 0; k < nTail; k++)
                 {
-                    if (TailX[k] == j && TailY[k] == i)
+                    if (TailX[k] == j && TailY[k] == i){
+                        attron(COLOR_PAIR(1));
                         mvprintw(i,j,"o");
+                        attroff(COLOR_PAIR(1));
+                    }    
                 }
         }
     }
@@ -111,7 +136,6 @@ void Input()
             gameOver = true;
             break;
     }
-
 }
 
 void Logic()
@@ -123,7 +147,7 @@ void Logic()
     TailX[0] = x; // the first tail piece will be placed on the start position once it's printed
     TailY[0] = y;
 
-    for (int i = 1; i < nTail; i++) // interate for every tail piece nTail, starting with pos 1
+    for (int i = 1; i < nTail; i++) // loop that builds a chain, interate for every tail piece nTail, starting with pos 1
     {
         prev2X = TailX[i]; // prev2X becomes equal to TailX[1]
         prev2Y = TailY[i]; // prev2Y becomes euqla to TailY[1]
@@ -153,9 +177,8 @@ void Logic()
             break;
     }
 
-    if (x > width || x < 1 || y > height || y < 1)
+    if (x > width || x < 1 || y > height || y < 1) // if x reaches boundaries, game over
         gameOver = true;
-
 
     if (x == fruitX && y == fruitY) // When you eat a fruit, add one to score, assign a new rand pos to fruit, and increase tail
     {
@@ -172,19 +195,23 @@ void Logic()
         }
 }
 
-void registration()
+void registration() // GAME OVER SCREEN
 {
-        string ruserName;
         system("clear");
+
+        string ruserName; // define a userName, output a game over prompt and ask for name for high score screen
         cout << "Your score was " << score << endl;
         cout << "\t Enter the username : ";
         cin >> ruserName;
 
-        ofstream f1("highscore.txt", ios::app); //append the directory
+        ofstream f1("highscore.txt", ios::app); //append the file directory - ios::app
         f1 << ruserName << ' ' << score << endl;
+
         system("clear");
         clear();
 }
+
+void ScoreScreen(); // calling this now so it can be used in main()
 
 int main()
 {
@@ -302,8 +329,8 @@ void ScoreScreen()
         )";            
         cout << endl;                                                       
 
-        cout << "#" << "    " << "Name" << "\t" << "Score" << endl;
-        cout << "----------------------" << endl;
+        cout << "#" << "    " << "Name" << "\t\t" << "Score" << endl;
+        cout << "-----------------------------" << endl;
 
         sort(score_vector.begin(), score_vector.end()); // sort the vector from beginning to end (descending)
         reverse(score_vector.begin(), score_vector.end()); // reverse the order of the sort (ascending)
@@ -311,7 +338,7 @@ void ScoreScreen()
         int place = 1;
         int topTen = 0;
         for(auto it = score_vector.begin(); topTen < 10; ++it){ // starting at the first score, keep going as long as you're not at the end, +1 to it
-            cout << place << "    " << it->second << "\t" << it->first << endl; // Print 
+            cout << place << "    " << it->second << "\t\t" << it->first << endl; // Print 
             place++;
             topTen++;
         }
