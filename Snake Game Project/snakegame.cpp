@@ -14,7 +14,8 @@
 
 using namespace std;
 #define RESET   "\033[0m"
-
+#define BOLDRED     "\033[1m\033[31m"
+#define BOLDGREEN   "\033[1m\033[32m"
 
 // Creating some universal constants and a boolean for whether the game is over
 bool gameOver;
@@ -74,15 +75,15 @@ void Draw()
             else if (j == 0 || j == 21) // printing the walls?
                 mvprintw(i,j,"#");
             else if (i == y && j == x){ // printing the head
-                attron(COLOR_PAIR(1));
+                BOLDGREEN;
                 mvprintw(i,j,"O");
-                attroff(COLOR_PAIR(1));
+                RESET;
             }
             else if (i == fruitY && j == fruitX) // printing the fruit
             {    
-                attron(COLOR_PAIR(2));
+                BOLDRED;
                 mvprintw(i,j,"@");
-                attroff(COLOR_PAIR(2));
+                RESET;
             }    
             else                                     // printing the tail section
                 for (int k = 0; k < nTail; k++)
