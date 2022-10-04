@@ -1,7 +1,7 @@
 // SNAKE GAME
 // by AJP
 //
-// v 1.3.0
+// v 1.3.1
 
 #include <iostream>
 #include <cstdlib>
