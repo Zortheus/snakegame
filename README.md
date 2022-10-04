@@ -13,5 +13,7 @@ Update v1.3.0 [10/3/22]
 2. Sorted High Score Menu, limited to only top 10 scores, formatted and and added # place
 3. Snake is now colored green, fruit is red
 
+Update v1.3.1 [10/4/22]
+1. Sync with Github repository
 
 Note: When compiling, make sure to link the ncurses libray by adding -lncurses
