@@ -75,15 +75,15 @@ void Draw()
             else if (j == 0 || j == 21) // printing the walls?
                 mvprintw(i,j,"#");
             else if (i == y && j == x){ // printing the head
-                BOLDGREEN;
+                attron(COLOR_PAIR(1));
                 mvprintw(i,j,"O");
-                RESET;
+                attroff(COLOR_PAIR(1));
             }
             else if (i == fruitY && j == fruitX) // printing the fruit
             {    
-                BOLDRED;
+                attron(COLOR_PAIR(2));
                 mvprintw(i,j,"@");
-                RESET;
+                attroff(COLOR_PAIR(2));
             }    
             else                                     // printing the tail section
                 for (int k = 0; k < nTail; k++)
